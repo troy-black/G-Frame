@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+
+<script src='static/javascript/jquery-3.3.1.min.js'></script>
+
+<script type='text/javascript'>
+
+  $(document).ready(function () {
+    let vid = document.getElementById('vid_box');
+    vid.addEventListener('ended', function () {
+      setTimeout(
+          function () {
+            getRandomMediaInfo()
+          }, 1000);
+    });
+
+    let img = document.getElementById('img_box');
+    img.addEventListener('load', function () {
+      setTimeout(
+          function () {
+            getRandomMediaInfo()
+          }, {{ refresh }});
+    });
+
+    getRandomMediaInfo();
+  });
+
+  function getRandomMediaInfo() {
+    $.getJSON('/random?' + +new Date().getTime(), function (result) {
+      loadMedia(result.filename, result.mimetype);
+    });
+  }
+
+  function loadMedia(filename, mimetype) {
+    let vidBox = document.getElementById('vid_box');
+    let imgBox = document.getElementById('img_box');
+    if (mimetype.startsWith('video')) {
+      vidBox.src = '/media?filename=' + filename;
+      vidBox.style.display = 'block';
+      imgBox.style.display = 'none';
+      vidBox.load();
+    } else {
+      imgBox.src = '/media?filename=' + filename;
+      imgBox.style.display = 'block';
+      vidBox.style.display = 'none';
+    }
+  }
+
+
+</script>
+
+<html lang='en'>
+
+<head>
+
+	<title>Grama Frame</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		.image_box {
+			display: grid;
+			width: 100%;
+			height: auto;
+		}
+
+		.center-fit {
+			max-width: 100%;
+			max-height: 100vh;
+			margin: auto;
+		}
+	</style>
+
+</head>
+
+<body bgcolor='#000000'>
+
+<div class='image_box' id='image_box'>
+	<img class='center-fit' src='/media' alt='' id='img_box'>
+</div>
+
+<div class='video_box' id='video_box'>
+	<video class='center-fit' id='vid_box' autoplay>
+		<source src='/media' type='video/pm4'>
+		Your browser does not support HTML5 video.
+	</video>
+</div>
+
+</body>
+
+</html>

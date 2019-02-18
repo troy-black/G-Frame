@@ -1,0 +1,16 @@
+{
+  "ALBUM_SYNC_LIST": [
+    "*Shared*"
+  ],
+  "API_DOWNLOAD_VIDEO_EXTENSION": "=dv",
+  "API_FORCE_MEDIA_UPDATE": false,
+  "API_MAX_RESOLUTION_EXTENSION": "=w1920-h1080",
+  "API_SERVICE_NAME": "photoslibrary",
+  "API_SERVICE_SCOPES": [
+    "https://www.googleapis.com/auth/photoslibrary.readonly"
+  ],
+  "API_VERSION": "v1",
+  "DOWNLOAD_PHOTO_PATH": "~/gFrame/Photos/",
+  "LIMIT_API_REFRESH_SECONDS": 3600,
+  "LIMIT_DISPLAY_REFRESH_MILLISECONDS": 10000
+}

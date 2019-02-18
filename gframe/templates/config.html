@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<script src='static/javascript/jquery-3.3.1.min.js'></script>
+<script>
+
+  function loadConfig() {
+    $.getJSON('/json_config', function (result) {
+      document.getElementById('txtBox').value = JSON.stringify(result, null, '\t');
+    });
+  }
+
+  function saveConfig() {
+    let sendData = document.getElementById('txtBox').value;
+    $.ajax({
+      url: '/json_config',
+      type: "PUT",
+      data: sendData,
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      success: function () {
+      }
+    })
+
+  }
+
+</script>
+
+<head>
+	<meta charset='UTF-8'>
+	<title>Configuration</title>
+</head>
+
+<body>
+
+<br>
+<button onclick="loadConfig()">Load</button>
+&nbsp;&nbsp;&nbsp;&nbsp;
+<button onclick="saveConfig()">Save</button>
+<br>
+
+<label>
+	<br>
+	JSON Configuration
+	<br>
+	<textarea rows='25' cols='75' id='txtBox'>
+</textarea>
+</label>
+
+</body>
+
+</html>
