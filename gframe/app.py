@@ -7,11 +7,11 @@ import google_auth_oauthlib.flow
 import mimetypes
 import requests
 
-from gframe.json.credentials import credentials
+from gframe.json_config.credentials import credentials
 from gframe import google_photos
 from gframe.local_media import Media
-from gframe.json.config import config
-from gframe.json.client_secret import client_secret
+from gframe.json_config.config import config
+from gframe.json_config.client_secret import client_secret
 
 logging.debug('Setting Environment Variables')
 # Disable HTTPS

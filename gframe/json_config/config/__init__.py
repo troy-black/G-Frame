@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from gframe.json import Json
+from gframe.json_config import Json
 
 
 config = Json(__name__)

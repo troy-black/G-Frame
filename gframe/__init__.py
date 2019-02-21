@@ -2,8 +2,7 @@ import logging.config
 
 from pkg_resources import get_distribution, DistributionNotFound
 
-dist_name = 'gFrame'
-# dist_name = 'G-Frame'
+dist_name = 'G-Frame'
 __version__ = '0.0.0'
 
 try:
@@ -12,10 +11,10 @@ except DistributionNotFound:
     __version__ = '0.0.0'
 
 try:
-    from gframe.json.log import log
+    from gframe.json_config.log import log
     logging.config.dictConfig(log.data)
 except (FileNotFoundError, ValueError) as e:
     logging.basicConfig(level=logging.INFO)
-    logging.critical('Unable to load config.json', exc_info=True)
+    logging.critical('Unable to load config.json_config', exc_info=True)
 
 logging.debug('Starting Application')
