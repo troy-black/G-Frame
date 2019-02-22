@@ -4,7 +4,7 @@ import logging
 
 from google.oauth2.credentials import Credentials as Google_Credentials
 
-from gframe.json_config import Json
+from gframe.json import Json
 
 
 class Credentials(Json):

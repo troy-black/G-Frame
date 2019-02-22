@@ -7,8 +7,8 @@ import google.oauth2.credentials
 import googleapiclient.discovery
 import requests
 
-from gframe.json_config.credentials import credentials
-from gframe.json_config.config import config
+from gframe.json.credentials import credentials
+from gframe.json.config import config
 
 
 def sync_google_photos():

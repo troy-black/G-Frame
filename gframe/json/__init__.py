@@ -33,8 +33,8 @@ class Json:
     def load_json_from_resource(self):
         self.save_data(self.load_string())
 
-    def load_string(self):
-        return resource_string(self.module_name, self.json_name)
+    def load_string(self) -> str:
+        return str(resource_string(self.module_name, self.json_name), 'utf-8')
 
     def load_json_from_file(self, local_json_path: str):
         with open(local_json_path, 'r') as file:

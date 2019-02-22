@@ -7,11 +7,11 @@ import google_auth_oauthlib.flow
 import mimetypes
 import requests
 
-from gframe.json_config.credentials import credentials
+from gframe.json.credentials import credentials
 from gframe import google_photos
 from gframe.local_media import Media
-from gframe.json_config.config import config
-from gframe.json_config.client_secret import client_secret
+from gframe.json.config import config
+from gframe.json.client_secret import client_secret
 
 logging.debug('Setting Environment Variables')
 # Disable HTTPS
@@ -134,13 +134,13 @@ def get_media():
     return flask.send_file(filename, mimetype=mimetypes.guess_type(filename)[0])
 
 
-@app.route('/json_config', methods=['PUT'])
+@app.route('/json', methods=['PUT'])
 def put_config():
     config.save_data(flask.request.json)
     return flask.jsonify(**config.data)
 
 
-@app.route('/json_config', methods=['GET'])
+@app.route('/json', methods=['GET'])
 def get_config():
     return flask.jsonify(**config.data)
 
@@ -178,4 +178,4 @@ def add_header(response):
 if __name__ == '__main__':
     # Specify a hostname and port that are set as a valid redirect URI for
     # your API project in the Google API Console.
-    app.run('localhost', 5050, debug=True)
+    app.run('localhost', 5000, debug=True)
