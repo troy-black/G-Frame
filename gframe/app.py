@@ -134,13 +134,13 @@ def get_media():
     return flask.send_file(filename, mimetype=mimetypes.guess_type(filename)[0])
 
 
-@app.route('/json', methods=['PUT'])
+@app.route('/json_config', methods=['PUT'])
 def put_config():
     config.save_data(flask.request.json)
     return flask.jsonify(**config.data)
 
 
-@app.route('/json', methods=['GET'])
+@app.route('/json_config', methods=['GET'])
 def get_config():
     return flask.jsonify(**config.data)
 
@@ -178,4 +178,4 @@ def add_header(response):
 if __name__ == '__main__':
     # Specify a hostname and port that are set as a valid redirect URI for
     # your API project in the Google API Console.
-    app.run('localhost', 5000, debug=True)
+    app.run('localhost', 5000)
