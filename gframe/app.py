@@ -1,4 +1,5 @@
 import os
+import json
 import time
 import logging
 import flask
@@ -136,7 +137,7 @@ def get_media():
 
 @app.route('/json_config', methods=['PUT'])
 def put_config():
-    config.save_data(flask.request.json)
+    config.save_data(json.dumps(flask.request.json))
     return flask.jsonify(**config.data)
 
 
@@ -152,7 +153,7 @@ def view_config():
 
 @app.route('/json_client_secret', methods=['PUT'])
 def put_client_secret():
-    client_secret.save_data(flask.request.json)
+    client_secret.save_data(json.dumps(flask.request.json))
     return flask.jsonify(**client_secret.data)
 
 
