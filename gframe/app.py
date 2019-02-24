@@ -1,18 +1,19 @@
-import os
 import json
-import time
 import logging
+import mimetypes
+import os
+import time
+
 import flask
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
-import mimetypes
 import requests
 
-from gframe.json.credentials import credentials
 from gframe import google_photos
+from gframe.client_secret import client_secret
+from gframe.config import config
+from gframe.credentials import credentials
 from gframe.local_media import Media
-from gframe.json.config import config
-from gframe.json.client_secret import client_secret
 
 logging.debug('Setting Environment Variables')
 # Disable HTTPS

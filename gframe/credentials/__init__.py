@@ -1,7 +1,7 @@
-import flask
 import json
 import logging
 
+import flask
 from google.oauth2.credentials import Credentials as Google_Credentials
 
 from gframe.json import Json
@@ -30,4 +30,4 @@ class Credentials(Json):
         self.set_session_credentials(google_credentials)
 
 
-credentials = Credentials(__name__, load=False)
+credentials = Credentials(__file__, load=False)

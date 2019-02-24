@@ -1,3 +1,3 @@
 from gframe.json import Json
 
-log = Json(__name__)
+log = Json(__file__)

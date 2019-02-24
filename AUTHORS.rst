@@ -2,4 +2,4 @@
 Contributors
 ============
 
-* troy-black <>
+* troy-black <> troydblack@gmail.com

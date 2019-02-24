@@ -11,7 +11,7 @@ except DistributionNotFound:
     __version__ = '0.0.0'
 
 try:
-    from gframe.json.log import log
+    from gframe.log import log
     logging.config.dictConfig(log.data)
 except (FileNotFoundError, ValueError) as e:
     logging.basicConfig(level=logging.INFO)

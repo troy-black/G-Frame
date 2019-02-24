@@ -1,40 +1,25 @@
 import json
 import os
-
-import gframe
-
-from pkg_resources import resource_string
 from pathlib import Path
 
 
 class Json:
     def __init__(
             self,
-            module_name: str,
+            local_file=__file__,
             json_name='',
-            local_path=os.path.join(str(Path.home()), gframe.dist_name),
             load=True,
     ):
-        self.module_name = module_name
+        self.local_path = str(os.path.dirname(os.path.realpath(local_file)))
         if json_name == '':
-            json_name = module_name.split('.')[-1] + '.json'
+            json_name = os.path.basename(self.local_path) + '.json'
         self.json_name = json_name
-        self.local_path = local_path
         self.data = {}
         if load:
             self.load()
 
     def load(self):
-        if os.path.exists(self.get_local_json_path()):
-            self.load_json_from_file(self.get_local_json_path())
-        else:
-            self.load_json_from_resource()
-
-    def load_json_from_resource(self):
-        self.save_data(self.load_string())
-
-    def load_string(self) -> str:
-        return str(resource_string(self.module_name, self.json_name), 'utf-8')
+        self.load_json_from_file(self.get_local_json_path())
 
     def load_json_from_file(self, local_json_path: str):
         with open(local_json_path, 'r') as file:
@@ -55,8 +40,7 @@ class Json:
 
     def get_local_json_path(self) -> str:
         return os.path.join(
-                str(Path.home()),
-                self.local_path,
+                self.get_local_path(),
                 self.json_name,
         )
 
@@ -70,5 +54,5 @@ class Json:
         if self.local_file_exists:
             os.remove(self.get_local_json_path())
 
-    def local_file_exists(self):
+    def local_file_exists(self) -> bool:
         return os.path.isfile(self.get_local_json_path())

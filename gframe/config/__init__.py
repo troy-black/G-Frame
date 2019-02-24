@@ -3,8 +3,7 @@ from pathlib import Path
 
 from gframe.json import Json
 
-
-config = Json(__name__)
+config = Json(__file__)
 
 if config.get('SECRET_KEY') is None:
     config.data['SECRET_KEY'] = os.urandom(24).hex()
