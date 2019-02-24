@@ -1,6 +1,4 @@
 #!/bin/bash
-echo "This must be ran as sudo!!!"
-echo ""
 echo "This Install Script is intended to be ran on a FRESH INSTALL of Raspbian Lite - No Desktop GUI"
 echo ""
 echo "Run raspi-config and configure basic setting:"
@@ -25,16 +23,16 @@ echo "Complete raspi-config before continuing..."
 echo ""
 
 echo "Updating Rasbian"
-apt-get update -y && apt-get upgrade -y
+sudo apt-get update -y && sudo apt-get upgrade -y
 
 echo "Installing Openbox and Chromium"
-apt-get install --no-install-recommends xserver-xorg x11-xserver-utils xinit openbox chromium-browser -y
+sudo apt-get install --no-install-recommends xserver-xorg x11-xserver-utils xinit openbox chromium-browser -y
 
 echo "Install python3-pip git"
-apt-get install python3-pip git -y
+sudo apt-get install python3-pip git -y
 
 echo "Clone G-Frame"
-su pi -c "git clone https://github.com/troy-black/G-Frame.git"
+git clone https://github.com/troy-black/G-Frame.git
 
 echo "cd G-Frame"
 cd G-Frame
@@ -43,19 +41,19 @@ echo "Install virtualenv"
 pip3 install virtualenv
 
 echo "Create virtualenv venv"
-su pi -c "virtualenv venv"
+virtualenv venv
 
 echo "Activate venv"
-su pi -c "source venv/bin/activate"
+source venv/bin/activate
 
 echo "install requirements.txt"
-su pi -c "pip install -r requirements.txt"
+pip install -r requirements.txt
 
 echo "Writing to /etc/xdg/openbox/autostart"
-cp install/autostart /etc/xdg/openbox/autostart
+sudo cp install/autostart /etc/xdg/openbox/autostart
 
 echo "Writing to /etc/rc.local"
-cp install/rc.local /etc/rc.local
+sudo cp install/rc.local /etc/rc.local
 
 echo "Making run.sh executable"
-chmod +x run.sh
+sudo chmod +x run.sh
