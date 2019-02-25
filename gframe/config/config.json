@@ -10,7 +10,7 @@
     "https://www.googleapis.com/auth/photoslibrary.readonly"
   ],
   "API_VERSION": "v1",
-  "DOWNLOAD_PHOTO_PATH": "~/gFrame/Photos/",
+  "DOWNLOAD_PHOTO_PATH": "/home/pi/Pictures",
   "LIMIT_API_REFRESH_SECONDS": 3600,
   "LIMIT_DISPLAY_REFRESH_MILLISECONDS": 10000
 }
