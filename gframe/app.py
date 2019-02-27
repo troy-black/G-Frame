@@ -36,14 +36,15 @@ def index():
         logging.debug('Loading initial Setup GUI')
         return flask.render_template('setup.html')
     else:
-        global last_api_call
-        # Limit how often Google Photos API is called
-        if time.time() - last_api_call >= config.get(
-                'LIMIT_API_REFRESH_SECONDS'):
-            # If Authorization is required, return Google OAuth2 Login
-            if 'credentials' not in flask.session or not google_photos.sync_google_photos():
-                return flask.redirect('authorize')
-            last_api_call = int(time.time())
+        if check_online_status():
+            global last_api_call
+            # Limit how often Google Photos API is called
+            if time.time() - last_api_call >= config.get(
+                    'LIMIT_API_REFRESH_SECONDS'):
+                # If Authorization is required, return Google OAuth2 Login
+                if 'credentials' not in flask.session or not google_photos.sync_google_photos():
+                    return flask.redirect('authorize')
+                last_api_call = int(time.time())
         return flask.render_template(
                 'play.html',
                 refresh=int(config.get('LIMIT_DISPLAY_REFRESH_MILLISECONDS')),
@@ -175,6 +176,14 @@ def add_header(response):
     response.headers["Expires"] = "0"
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
+
+
+def check_online_status():
+    try:
+        req = requests.get('http://clients3.google.com/generate_204')
+        return req.status_code == 204
+    except Exception:
+        return False
 
 
 if __name__ == '__main__':
