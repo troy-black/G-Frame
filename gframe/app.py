@@ -27,8 +27,6 @@ app.secret_key = config.get('SECRET_KEY')
 # Force JSON to Return as Pretty/Readable Print
 app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
-last_api_call = 0
-
 
 @app.route('/')
 def index():
@@ -38,13 +36,10 @@ def index():
     else:
         if check_online_status():
             global last_api_call
-            # Limit how often Google Photos API is called
-            if time.time() - last_api_call >= config.get(
-                    'LIMIT_API_REFRESH_SECONDS'):
-                # If Authorization is required, return Google OAuth2 Login
-                if 'credentials' not in flask.session or not google_photos.sync_google_photos():
-                    return flask.redirect('authorize')
-                last_api_call = int(time.time())
+            # If Authorization is required, return Google OAuth2 Login
+            if 'credentials' not in flask.session or not google_photos.sync_google_photos():
+                return flask.redirect('authorize')
+            last_api_call = int(time.time())
         return flask.render_template(
                 'play.html',
                 refresh=int(config.get('LIMIT_DISPLAY_REFRESH_MILLISECONDS')),
@@ -53,52 +48,54 @@ def index():
 
 @app.route('/authorize')
 def authorize():
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            client_secret.get_local_json_path(),
-            scopes=config.get('API_SERVICE_SCOPES'),
-    )
+    if check_online_status():
+        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+                client_secret.get_local_json_path(),
+                scopes=config.get('API_SERVICE_SCOPES'),
+        )
 
-    # The URI created here must exactly match one of the authorized redirect
-    # URIs for the OAuth 2.0 client, which you configured in the API Console.
-    # If this value doesn't match an authorized URI, you will get a
-    # 'redirect_uri_mismatch' error.
-    flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
+        # The URI created here must exactly match one of the authorized
+        # redirect URIs for the OAuth 2.0 client, which you configured in the
+        # API Console. If this value doesn't match an authorized URI,
+        # you will get a 'redirect_uri_mismatch' error.
+        flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
 
-    authorization_url, state = flow.authorization_url(
-            # Enable offline access so that you can refresh an access token
-            # without re-prompting the user for permission. Recommended for
-            # web server apps.
-            access_type='offline',
-            # Enable incremental authorization. Recommended as a best practice.
-            include_granted_scopes='true',
-    )
+        authorization_url, state = flow.authorization_url(
+                # Enable offline access so that you can refresh an access token
+                # without re-prompting the user for permission. Recommended for
+                # web server apps.
+                access_type='offline',
+                # Enable incremental authorization. Recommended as a best
+                # practice.
+                include_granted_scopes='true',
+        )
 
-    # Store the state so the callback can verify the auth server response.
-    flask.session['state'] = state
-
-    return flask.redirect(authorization_url)
+        # Store the state so the callback can verify the auth server response.
+        flask.session['state'] = state
+        return flask.redirect(authorization_url)
+    return flask.redirect('/')
 
 
 @app.route('/oauth2callback')
 def oauth2callback():
-    # Specify the state when creating the flow in the callback so that it can
-    # verified in the authorization server response.
-    state = flask.session['state']
+    if check_online_status():
+        # Specify the state when creating the flow in the callback so that it
+        # can verified in the authorization server response.
+        state = flask.session['state']
 
-    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
-            client_secret.get_local_json_path(),
-            scopes=config.get('API_SERVICE_SCOPES'),
-            state=state,
-    )
-    flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
+        flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
+                client_secret.get_local_json_path(),
+                scopes=config.get('API_SERVICE_SCOPES'),
+                state=state,
+        )
+        flow.redirect_uri = flask.url_for('oauth2callback', _external=True)
 
-    # Use the authorization server's response to fetch the OAuth 2.0 tokens.
-    authorization_response = flask.request.url
-    flow.fetch_token(authorization_response=authorization_response)
+        # Use the authorization server's response to fetch the OAuth 2.0 tokens.
+        authorization_response = flask.request.url
+        flow.fetch_token(authorization_response=authorization_response)
 
-    # Store credentials in the session.
-    credentials.save_data(flow.credentials)
-
+        # Store credentials in the session.
+        credentials.save_data(flow.credentials)
     return flask.redirect('/')
 
 
@@ -108,11 +105,12 @@ def revoke():
         session_credentials = google.oauth2.credentials.Credentials(
                 **flask.session['credentials']
         )
-        requests.post(
-                'https://accounts.google.com/o/oauth2/revoke',
-                params={'token': session_credentials.token},
-                headers={'content-type': 'application/x-www-form-urlencoded'},
-        )
+        if check_online_status():
+            requests.post(
+                    'https://accounts.google.com/o/oauth2/revoke',
+                    params={'token': session_credentials.token},
+                    headers={'content-type': 'application/x-www-form-urlencoded'},
+            )
     return flask.redirect('/')
 
 
@@ -178,11 +176,11 @@ def add_header(response):
     return response
 
 
-def check_online_status():
+def check_online_status() -> bool:
     try:
-        req = requests.get('http://clients3.google.com/generate_204')
+        req = requests.get('http://clients3.google.com/generate_204', timeout=1)
         return req.status_code == 204
-    except Exception:
+    except requests.exceptions.ConnectionError:
         return False
 
 
