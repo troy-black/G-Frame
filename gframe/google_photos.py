@@ -45,17 +45,27 @@ def sync_albums(albums: dict, photos_api):
         if album_in_sync_list(album['title']):
             logging.debug('Syncing Google Album: ' + album['title'])
             body = {"albumId": album['id']}
-            media_dict = photos_api.mediaItems().search(body=body).execute()
             path = os.path.join(
                     config.get('DOWNLOAD_PHOTO_PATH'),
                     album['title'],
             )
             verify_path_exists(path)
-            sync_media(media_dict['mediaItems'], path)
+            media_file_names = []
+            read_album(body, path, media_file_names, photos_api)
+            remove_old_files(media_file_names, path)
     remove_old_albums(
             os.listdir(config.get('DOWNLOAD_PHOTO_PATH')),
             [t['title'] for t in albums],
     )
+
+
+def read_album(body: dict, path: str, media_file_names: list, photos_api):
+    media_dict = photos_api.mediaItems().search(body=body).execute()
+    sync_media(media_dict['mediaItems'], path)
+    media_file_names += [f['filename'] for f in media_dict['mediaItems']]
+    if 'nextPageToken' in media_dict:
+        body['pageToken'] = media_dict['nextPageToken']
+        read_album(body, path, media_file_names, photos_api)
 
 
 def album_in_sync_list(album_name: str) -> bool:
@@ -70,7 +80,6 @@ def verify_path_exists(path: str):
 
 
 def sync_media(media_files: list, path: str):
-    remove_old_files([f['filename'] for f in media_files], path)
     for media in media_files:
         file_name = os.path.join(path, media['filename'])
         if config.get('API_FORCE_MEDIA_UPDATE') or not os.path.isfile(
